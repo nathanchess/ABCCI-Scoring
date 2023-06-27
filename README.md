@@ -19,6 +19,7 @@ https://user-images.githubusercontent.com/59159552/231617324-c48e72bb-15ce-481d-
 - Changed security policy detection (customizable)
 - Firewall enabled detection and individual inbound/outbound rule checks (customizable)
 - Full image cleanup (deletes or fixes all accounts, files, and security policy changes)
+- Customizable forensics questions (text-based answering)
 
 ## Setup
 

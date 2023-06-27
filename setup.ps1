@@ -13,9 +13,14 @@ function InstallMisc {
     foreach ($file in $file_folder) {
         # Invoke-Expression -Command "C:\Users\User\Desktop\CES_Scoring_Engine\Installers\$file" <- If you want to have the powershell script install exe's for you. (NOT RECOMMENDED, DUE TO LOAD TIMES)
     }
-    # Text file creation 
-    New-Item "C:\Users\User\Desktop\MonkeyDanPasswords.txt"
-    "abc1029 - Just in case I forget, this is my account password!" | Out-File -FilePath "C:\Users\User\Desktop\MonkeyDanPasswords.txt" -Force
+    "abcdefg02946$! - Just in case I forget, this is my account password!" | Out-File -FilePath "C:\Program Files (x86)\MonkeyDanPasswords.txt" 
+}
+
+function ForensicsSetup {
+    $ForensicsOne = "C:\Users\User\Desktop\ForensicsQuestionOne.txt"
+    "One of our friend's Dan has lost his password! He says he stored some pictures of his monkey family and wants to get them back before Benjamin the Hacker gets to it.`nHint: He said he left it on this user profile.`nPlease enter your answer on the line below the dashed and save the text file. If correct you will receive points.`n-----------------------------"| Out-File -FilePath $ForensicsOne
+    $ForensicsTwo = "C:\Users\User\Desktop\ForensicsQuestionTwo.txt"
+    "Based off of the slides that you heard today, what is the tool that allows you to browse the internet?`nPlease enter your answer on the line below the dashed and save the text file. If correct you will receive points.`n-----------------------------" | Out-File -FilePath $ForensicsTwo
 }
 
 function InstallCosmetics {
@@ -83,6 +88,7 @@ InstallCosmetics -scoring_site $settingsJSON.HTML_path
 SetPolicies
 CreateAccs -user_names $users -passwords $passwords -perm_levels $perms
 firewallEdit
+ForensicsSetup
 
 Start-Sleep -Seconds 7
 

@@ -11,8 +11,12 @@ $running = $true
 
 # Add softwares to check
 $softwareList = New-Object -TypeName 'System.Collections.ArrayList';
-$softwareList.Add("C:\Users\User\Desktop\MonkeyDanPasswords.txt")
+$softwareList.Add("C:\Program Files (x86)\MonkeyDanPasswords.txt")
 $softwareList.Add("C:\Program Files (x86)\Microsoft\Skype for Desktop")
+
+$forensicsList = New-Object -TypeName 'System.Collections.ArrayList';
+$forensicsList.Add("C:\Users\User\Desktop\ForensicsQuestionOne.txt")
+$forensicsList.Add("C:\Users\User\Desktop\ForensicsQuestionTwo.txt")
 
 # Add users to check
 $user_names = New-Object -TypeName 'System.Collections.ArrayList';
@@ -86,6 +90,23 @@ function checkDeletedUsers {
     }
 }
 
+function checkForensics {
+    $ForensicsOne = "C:\Users\User\Desktop\ForensicsQuestionOne.txt"
+    $ForensicsTwo = "C:\Users\User\Desktop\ForensicsQuestionTwo.txt"
+    foreach ($line in Get-Content -Path $ForensicsOne) {
+        if ($line -eq "abcdefg02946$!" -and !($GLOBAL:PROGRESS.ContainsKey("Forensics Question 1 Completed"))) {
+            pointNotification -header "Points have been updated!" -text "Forensics Question 1 Completed."
+            $GLOBAL:PROGRESS.Add("Forensics Question 1 Completed", 1)
+        }
+    }
+    foreach ($line in Get-Content -Path $ForensicsTwo) {
+        if ($line -eq "Browsers" -and !($GLOBAL:PROGRESS.ContainsKey("Forensics Question 2 Completed"))) {
+            pointNotification -header "Points have been updated!" -text "Forensics Question 2 Completed."
+            $GLOBAL:PROGRESS.Add("Forensics Question 2 Completed", 1)
+        }
+    }
+}
+
 function cleanupImage {
     # Change back local security policies to previous version.
     secedit /configure /db C:\Windows\security\local.sdb /cfg $settingsJSON.default_config_path /areas SECURITYPOLICY
@@ -95,6 +116,13 @@ function cleanupImage {
     # Delete all softwares that were being checked.
     for ($i = 0; $i -lt $softwareList.Count; $i++) {
         $folder = $softwareList[$i]
+        if (Test-Path -Path $folder) {
+            Remove-Item -Path $folder
+        }
+    }
+    # Delete all forensics question txt files.
+    for ($i = 0; $i -lt $forensicsList.Count; $i++) {
+        $folder = $forensicsList[$i]
         if (Test-Path -Path $folder) {
             Remove-Item -Path $folder
         }
@@ -126,6 +154,7 @@ while ($running) {
     softwareCheck -folders $softwareList
     policyCheck
     firewallCheck
+    checkForensics
     checkDeletedUsers -usernames $user_names
     $json = $GLOBAL:PROGRESS | ConvertTo-Json
     $json | Out-File -FilePath $settingsJSON.hashtable_path
