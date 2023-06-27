@@ -1,11 +1,10 @@
-# Welcome to the CP Scoring Engine Demo! 
+# Preface
 
 This is a series of scripts and GUI's that allow you to setup your own CyberPatriot style competition images and easily configure to detect for changes and award points! 
-This software was built with the intention of 
 
-Do NOT run this on your own host machine, as it will rewrite all security policies. Currently you NEED to do manual cleanup of the image youself, but I will be adding a cleanup function soon.
+This software was built with the intention of helping develop cybersecurity intrests within elementary schools in my local area, however as this software has developed it is now capable to be used for team trainings for competitions such as CyberPatriot (middle school level only though).
 
-This was software was created by Nathan Che. 
+Note: Although there is a engine cleanup feature, I still would not recommend running this on your host machine.
 
 ## Demo
 
@@ -20,6 +19,7 @@ https://user-images.githubusercontent.com/59159552/231617324-c48e72bb-15ce-481d-
 - Firewall enabled detection and individual inbound/outbound rule checks (customizable)
 - Full image cleanup (deletes or fixes all accounts, files, and security policy changes)
 - Customizable forensics questions (text-based answering)
+- Freedom to change and edit the scoring page appearance through HTML and CSS. (Feel free to use any other tech stack as you see fit)
 
 ## Setup
 
@@ -43,9 +43,9 @@ Navigate to local repository folder.
 
 Run .\setup.ps1 to initiate the scoring engine. (This will start adding / changing local security policies, files, and firewalls)
 
-Add a reset.txt file in the repository folder to initiate image clean-up.
-
 Done!
+
+Add a reset.txt file in the repository folder to initiate image clean-up.
 
 ## Roadmap
 
@@ -53,3 +53,5 @@ I plan to continue developing this scoring engine for future teams to use, and i
 - Audit change detection
 - Netstat log detection
 - Registry changes
+
+This software is built and maintained by Nathan Che.
