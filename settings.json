@@ -1,0 +1,8 @@
+{
+    "scoring_file_path": "C:\\Users\\User\\Desktop\\CP_Scoring_Engine\\scoring.ps1",
+    "logo": "C:\\Users\\User\\Desktop\\CP_Scoring_Engine\\Assets\\BTD6Logo.png",
+    "installer_path": "C:\\Users\\User\\Desktop\\CP_Scoring_Engine\\Installers",
+    "HTML_path": "C:\\Users\\User\\Desktop\\CP_Scoring_Engine\\GUI\\index.html",
+    "policies_config_path": "C:\\Users\\User\\Desktop\\CP_Scoring_Engine\\policies.cfg",
+    "hashtable_path": "C:\\Users\\User\\Desktop\\CP_Scoring_Engine\\hashtable.json"
+}

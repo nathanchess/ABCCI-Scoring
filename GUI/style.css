@@ -1,0 +1,44 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+#root {
+    display: flex;
+    background: rgb(8,140,219);
+    background: -moz-linear-gradient(90deg, rgba(8,140,219,1) 0%, rgba(10,204,255,1) 50%, rgba(8,140,219,1) 100%);
+    background: -webkit-linear-gradient(90deg, rgba(8,140,219,1) 0%, rgba(10,204,255,1) 50%, rgba(8,140,219,1) 100%);
+    background: linear-gradient(90deg, rgba(8,140,219,1) 0%, rgba(10,204,255,1) 50%, rgba(8,140,219,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#088cdb",endColorstr="#088cdb",GradientType=1);
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#report {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 5px;
+    padding: 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    width: 60%;
+}
+
+#list {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+hr {
+    width: 90%;
+}
+
+.center {
+    text-align: center;
+}
