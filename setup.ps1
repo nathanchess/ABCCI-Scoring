@@ -1,44 +1,8 @@
 # Global Variables
-$settingsFile = "C:\Users\User\Desktop\CP_Scoring_Engine\settings.json"
+$settingsFile = "C:\Users\User\Desktop\CP_Scoring_Engine\Configs\settings.json"
 $settingsJSON = Get-Content $settingsFile -Raw | ConvertFrom-Json
 
-# Helper Functions
-function Parse-SecPol($CfgFile){ 
-    secedit /export /cfg "$CfgFile" | out-null
-    $obj = New-Object psobject
-    $index = 0
-    $contents = Get-Content $CfgFile -raw
-    [regex]::Matches($contents,"(?<=\[)(.*)(?=\])") | %{
-        $title = $_
-        [regex]::Matches($contents,"(?<=\]).*?((?=\[)|(\Z))", [System.Text.RegularExpressions.RegexOptions]::Singleline)[$index] | %{
-            $section = new-object psobject
-            $_.value -split "\r\n" | ?{$_.length -gt 0} | %{
-                $value = [regex]::Match($_,"(?<=\=).*").value
-                $name = [regex]::Match($_,".*(?=\=)").value
-                $section | add-member -MemberType NoteProperty -Name $name.tostring().trim() -Value $value.tostring().trim() -ErrorAction SilentlyContinue | out-null
-            }
-            $obj | Add-Member -MemberType NoteProperty -Name $title -Value $section
-        }
-        $index += 1
-    }
-    return $obj
-}
-
-function Set-SecPol($Object, $CfgFile){
-   $SecPool.psobject.Properties.GetEnumerator() | %{
-        "[$($_.Name)]"
-        $_.Value | %{
-            $_.psobject.Properties.GetEnumerator() | %{
-                "$($_.Name)=$($_.Value)"
-            }
-        }
-    } | out-file $CfgFile -ErrorAction Stop
-    secedit /configure /db c:\windows\security\local.sdb /cfg "$CfgFile" /areas SECURITYPOLICY
-}
-
-function cleanupImage {
-
-}
+Import-Module NetSecurity
 
 # Setup Functions
 function InstallMisc {
@@ -88,10 +52,18 @@ function CreateAccs {
     }
 }
 
+function firewallEdit {
+    # Alternative rules you could set for the firewall.
+    """
+    $RDP = Get-NetFirewallRule -DisplayName Remote Desktop
+    $RDP.Enabled = $true
+    $inHTTP = Get-NetFirewallRule -DisplayName HTTP-Inbound
+    $inHTTP.Enabled = $true
+    """
+    Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled False
+}
+
 # Instructions
-
-$Theme = Read-Host "Please enter the theme you'd like to setup"
-
 $users = New-Object -TypeName 'System.Collections.ArrayList';
 $passwords = New-Object -TypeName 'System.Collections.ArrayList';
 $perms = New-Object -TypeName 'System.Collections.ArrayList';
@@ -100,14 +72,19 @@ $users.Add("BenjaminTheHacker")
 $passwords.Add("HackerThingz")
 $perms.Add("Admin")
 
-if ( $Theme -eq "BTD6" ) {
-    $scoringPath = $settingsJSON.scoring_file_path
-    New-BurntToastNotification -AppLogo $settingsJSON.logo -Text 'CP Scoring Engine', "Now setting up Virtual Machine Image", "Theme: BTD6"
-    InstallMisc -file_folder $settingsJSON.installer_path
-    InstallCosmetics -scoring_site $settingsJSON.HTML_path
-    SetPolicies
-    CreateAccs -user_names $users -passwords $passwords -perm_levels $perms
-    Invoke-Expression -Command $scoringPath
-} else {
-    New-BurntToastNotification -Text 'CP Scoring Engine', "ERROR: Unknown theme name given..."
-}
+$GLOBAL:PROGRESS = @{}
+$json = $GLOBAL:PROGRESS | ConvertTo-Json
+$json | Out-File -FilePath $settingsJSON.hashtable_path
+
+$scoringPath = $settingsJSON.scoring_file_path
+New-BurntToastNotification -AppLogo $settingsJSON.logo -Text 'CP Scoring Engine', "Now setting up Virtual Machine Image", "Theme: BTD6"
+InstallMisc -file_folder $settingsJSON.installer_path
+InstallCosmetics -scoring_site $settingsJSON.HTML_path
+SetPolicies
+CreateAccs -user_names $users -passwords $passwords -perm_levels $perms
+firewallEdit
+
+Start-Sleep -Seconds 7
+
+Write-Host "Starting scoring..."
+Invoke-Expression -Command $scoringPath

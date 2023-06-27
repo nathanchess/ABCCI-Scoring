@@ -17,26 +17,38 @@ https://user-images.githubusercontent.com/59159552/231617324-c48e72bb-15ce-481d-
 - Themed scoring GUI hosted on local html file
 - Deleted user, files, and folder detection (customizable)
 - Changed security policy detection (customizable)
+- Firewall enabled detection and individual inbound/outbound rule checks (customizable)
+- Full image cleanup (deletes or fixes all accounts, files, and security policy changes)
 
 ## Setup
 
 Download a blank Windows virtual machine: 
+
 Disable "Virtualize Intel VT-x/EPT or AMD-V/RVI" on the CPU is using a nested virtual machine.
 
 Run Powershell ISE as administrator.
+
 Run "Set-ExecutionPolicy RemoteSigned" and click "Yes to All"
+
 Run "Install-Module -Name BurntToast -RequiredVersion 0.8.5" <- Toast Notification Manager
+
 Install NuGet Provider if prompted and trust all "unfilted repositories" if prompted.
-Navigate to local repository folder.
 
 Install Google Chrome.
+
 Adjust your settings.json file as you see fit (make sure paths are all set)
+
+Navigate to local repository folder.
+
+Run .\setup.ps1 to initiate the scoring engine. (This will start adding / changing local security policies, files, and firewalls)
+
+Add a reset.txt file in the repository folder to initiate image clean-up.
+
+Done!
 
 ## Roadmap
 
 I plan to continue developing this scoring engine for future teams to use, and it will include the following features:
-- Cleanup function for image
-- Firewall detection
-- Full policy checks (audits, etc.)
-- Netstat logs
+- Audit change detection
+- Netstat log detection
 - Registry changes

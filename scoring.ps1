@@ -1,9 +1,13 @@
 # Security policies to check
-$settingsFile = "C:\Users\User\Desktop\CP_Scoring_Engine\settings.json"
+$settingsFile = "C:\Users\User\Desktop\CP_Scoring_Engine\Configs\settings.json"
 $settingsJSON = Get-Content $settingsFile -Raw | ConvertFrom-Json
 $GLOBAL:POLICY_CONFIG = @{
     "MinimumPasswordLength"=0
 }
+
+Import-Module NetSecurity
+
+$running = $true
 
 # Add softwares to check
 $softwareList = New-Object -TypeName 'System.Collections.ArrayList';
@@ -41,6 +45,22 @@ function softwareCheck {
         }
     }
 }
+
+function firewallCheck {
+    $profiles = Get-NetFirewallProfile
+    $firewallEnabled = $false
+    foreach ($profile in $profiles) {
+        if ($profile.Enabled) {
+            $firewallEnabled = $true
+            break
+        }
+    }
+    if ($firewallEnabled -and !($GLOBAL:PROGRESS.ContainsKey("Firewall enabled"))) {
+        pointNotification -header "Points have been updated!" -text "Firewall enabled."
+        $GLOBAL:PROGRESS.Add("Firewall enabled", 1)
+    }
+}
+
 function pointNotification {
     Param (
         [string] $header,
@@ -66,14 +86,48 @@ function checkDeletedUsers {
     }
 }
 
-start-sleep -seconds 5;
+function cleanupImage {
+    # Change back local security policies to previous version.
+    secedit /configure /db C:\Windows\security\local.sdb /cfg $settingsJSON.default_config_path /areas SECURITYPOLICY
+    # Remove chrome window for scoring engine.
+    $chromeProcess = Get-Process -Name chrome
+    $chromeProcess | ForEach-Object { Stop-Process $_.Id }
+    # Delete all softwares that were being checked.
+    for ($i = 0; $i -lt $softwareList.Count; $i++) {
+        $folder = $softwareList[$i]
+        if (Test-Path -Path $folder) {
+            Remove-Item -Path $folder
+        }
+    }
+    # Delete all extra users that were created.
+    for ($i = 0; $i -lt $user_names.Count; $i++) {
+        $user = $user_names[$i]
+        if (Get-LocalUser -Name $user -ErrorAction SilentlyContinue) {
+            Remove-LocalUser -Name $user -Confirm:$false
+        }
+    }
+    # Fix firewall
+    Set-NetFirewallProfile -Profile Domain, Public, Private -Enabled True
+    Write-Host "Image has been cleaned up."
+    Exit
+}
+function checkResetFlag {
+    if (Test-Path -Path $settingsJSON.resetFlagFilePath) {
+        Remove-Item -Path $settingsJSON.resetFlagFilePath -Force
+        cleanupImage
+    }
+}
+
 $GLOBAL:PROGRESS = @{}
-while ($true) {
+$json = $GLOBAL:PROGRESS | ConvertTo-Json
+$json | Out-File -FilePath $settingsJSON.hashtable_path
+while ($running) {
     start-sleep -seconds 5;
     softwareCheck -folders $softwareList
     policyCheck
+    firewallCheck
     checkDeletedUsers -usernames $user_names
-
     $json = $GLOBAL:PROGRESS | ConvertTo-Json
     $json | Out-File -FilePath $settingsJSON.hashtable_path
+    checkResetFlag
 }
